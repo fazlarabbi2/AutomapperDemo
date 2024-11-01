@@ -1,23 +1,23 @@
 ﻿using AutoMapper;
-using AutomapperDemo.Models;
+using AutomapperDemo.Model;
 
-namespace AutomapperDemo.Model;
-
-public class MyMappingProfile : Profile
+namespace AutomapperDemo.Models
 {
-    public MyMappingProfile()
+    public class MyMappingProfile : Profile
     {
-        //Configure the mapping 
-        CreateMap<Employee, EmployeeDTO>()
-            .ForMember(d => d.EmployeeId, act => act.MapFrom(src => src.Id))
-            //Address is a Complex type,
-            //So, Map Address Object to Simple type using For Member and MapFrom Method
-            .ForMember(dest => dest.City, act => act.MapFrom(src => src.Address.City))
-            .ForMember(dest => dest.State, act => act.MapFrom(src => src.Address.State))
-            .ForMember(dest => dest.Country, act => act.MapFrom(src => src.Address.Country))
-            //Call the ReverseMap method to Make the Mapping Bi-Directional
-            .ReverseMap();
+        public MyMappingProfile()
+        {
+            //Configure the Mappings Between Order and OrderDTO
+            CreateMap<Order, OrderDTO>()
+            .AfterMap((src, dest) => CustomizeOrderDTO.CalculateTotalPrice(src, dest))
+            //.AfterMap(CustomizeOrderDTO.CalculateTotalPrice)
+            .AfterMap((src, dest) =>
+            {
+                dest.OrderDate = CustomizeOrderDTO.CustomizeOrderDate(src.OrderDate);
+            });
 
-        CreateMap<Category, CategoryDTO>();
+            //Configure the Mappings Between OrderItem and OrderItemDTO
+            CreateMap<OrderItem, OrderItemDTO>();
+        }
     }
 }

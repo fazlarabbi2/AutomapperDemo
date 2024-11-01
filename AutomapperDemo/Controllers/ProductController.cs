@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutomapperDemo.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutomapperDemo.Controllers
@@ -15,32 +14,26 @@ namespace AutomapperDemo.Controllers
         //Framework will inject the instance using Constructor
         public ProductController(IMapper mapper)
         {
+            //Initialize the variable with the injected mapper instance
             _mapper = mapper;
         }
 
-        private List<Category> listCategories = new List<Category>()
+        private List<Product> listProducts = new List<Product>()
         {
-           new Category { Id = 1, Name="Electronics",
-               Products = new List<Product>
-               {
-                   new Product { Id = 1001, Name="Laptop", Description="Gaming Laptop", Price = 1000, CategoryId = 1},
-                   new Product { Id = 1002, Name="Desktop", Description="Programming Desktop", Price = 2000, CategoryId = 1}
-               }
-           },
-           new Category { Id = 2, Name="Appearl",
-               Products = new List<Product>
-               {
-                   new Product { Id = 1003, Name="T-Shrt", Description="T-Shrt with V Neck", Price = 700, CategoryId = 2},
-                   new Product { Id = 1004, Name="Jacket", Description="Winter Jacket", Price = 800, CategoryId = 2}
-               }
-           }
+            new Product { Id = 1001, Name="Laptop", Category="Electronics", Price = 1000, InStock = true},
+            new Product { Id = 1002, Name="T-Shirt", Category="Merchandise", Price = 2000, InStock = true},
+            new Product { Id = 1003, Name="Desktop", Category="Electronics", Price = 1000, InStock = false},
+            new Product { Id = 1003, Name="Jacket", Category="Merchandise", Price = 2000, InStock = false}
         };
 
-        [HttpGet("Categories")]
-        public ActionResult<List<CategoryDTO>> GetAllCategory()
+
+        [HttpGet]
+        public ActionResult<ProductDTO> GetProdcuts()
         {
-            List<CategoryDTO> categories = _mapper.Map<List<CategoryDTO>>(listCategories);
-            return Ok(categories);
+            // AutoMapper uses the pre-condition to decide if Price should be mapped
+            //var productDTO = _mapper.Map<List<Product>, List<ProductDTO>>(listProducts);
+            var productDTO = _mapper.Map<List<ProductDTO>>(listProducts);
+            return Ok(productDTO);
         }
     }
 }
